@@ -1,6 +1,6 @@
 # move-win-vd
 
-A minimal Windows utility that moves the active window to an adjacent virtual desktop.
+A minimal Windows utility that moves, pins, and unpins the active window across virtual desktops.
 
 ## Requirements
 
@@ -48,7 +48,7 @@ The most convenient way to use this tool is to bind it to keyboard shortcuts via
 ## Command Line
 
 ```
-move-win-vd.exe r|l [/w] [/s]
+move-win-vd.exe r|l|p|u|pa|ua [/w] [/s]
 ```
 
 ### Arguments
@@ -57,8 +57,12 @@ move-win-vd.exe r|l [/w] [/s]
 |----------|-------------|
 | `r` | Move the active window to the **next** (right) virtual desktop |
 | `l` | Move the active window to the **previous** (left) virtual desktop |
+| `p` | Pin the active window so it appears on **all** virtual desktops |
+| `u` | Unpin the active window |
+| `pa` | Pin the active window's **app** on all virtual desktops |
+| `ua` | Unpin the active window's **app** |
 
-The `r` or `l` argument is required.
+One action argument is required.
 
 ### Options
 
@@ -67,7 +71,7 @@ The `r` or `l` argument is required.
 | `/w` | **Wrap around** — if at the last desktop, move to the first (and vice versa) |
 | `/s` | **Switch** — also move your view to the destination desktop |
 
-Options can be combined freely.
+`/w` and `/s` apply to `r`/`l` move actions only.
 
 ### Examples
 
@@ -83,7 +87,23 @@ move-win-vd.exe r /s
 
 # Move window to the previous desktop, follow it, and wrap around
 move-win-vd.exe l /s /w
+
+# Pin the active window on all desktops
+move-win-vd.exe p
+
+# Unpin the active window
+move-win-vd.exe u
+
+# Pin/unpin the active app on all desktops
+move-win-vd.exe pa
+move-win-vd.exe ua
 ```
+
+### Pin/Unpin Behavior Note
+
+Virtual desktop pinning behavior is determined by the Windows API used by `winvd`.
+If an app is pinned, unpinning one of its windows may unpin the app-level pin state.
+If you want explicit app-level control, prefer `pa` and `ua`.
 
 <br>
 
