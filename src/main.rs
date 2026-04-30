@@ -4,16 +4,28 @@
 use std::env;
 use std::process;
 use windows::Win32::UI::WindowsAndMessaging::GetForegroundWindow;
-use winvd::{get_current_desktop, get_desktop_count, move_window_to_desktop, switch_desktop};
+use winvd::{
+    get_current_desktop, get_desktop_count, move_window_to_desktop, pin_window, switch_desktop,
+    unpin_window,
+};
 
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
     let flags: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
 
-    // First positional argument must be "r" (next) or "l" (prev)
-    let direction = match args.first().map(|s| s.as_str()) {
-        Some("r") => 1i32,
-        Some("l") => -1i32,
+    enum WindowAction {
+        Right,
+        Left,
+        Pin,
+        Unpin,
+    }
+
+    // Parse the first positional argument to determine the action
+    let action = match args.first().map(|s| s.as_str()) {
+        Some("r") => WindowAction::Right,
+        Some("l") => WindowAction::Left,
+        Some("p") => WindowAction::Pin,
+        Some("u") => WindowAction::Unpin,
         _ => process::exit(1),
     };
 
@@ -29,6 +41,23 @@ fn main() {
         process::exit(1);
     }
 
+    // Pin/unpin are terminal actions; only left/right continue to move logic.
+    match action {
+        WindowAction::Pin => {
+            if pin_window(hwnd).is_err() {
+                process::exit(1);
+            }
+            return;
+        }
+        WindowAction::Unpin => {
+            if unpin_window(hwnd).is_err() {
+                process::exit(1);
+            }
+            return;
+        }
+        WindowAction::Left | WindowAction::Right => {}
+    }
+
     // Get the current desktop index and total desktop count
     let Ok(current) = get_current_desktop() else {
         process::exit(1);
@@ -38,6 +67,12 @@ fn main() {
     };
     let Ok(count) = get_desktop_count() else {
         process::exit(1);
+    };
+
+    let direction = match action {
+        WindowAction::Right => 1,
+        WindowAction::Left => -1,
+        _ => 0,
     };
 
     // Calculate target desktop index, optionally wrapping around
