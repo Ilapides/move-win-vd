@@ -2,6 +2,9 @@
 
 A minimal Windows utility that moves, pins, and unpins the active window across virtual desktops.
 
+Fork/derivative of [ryomo/move-win-vd](https://github.com/ryomo/move-win-vd), extended with pin/unpin window and app actions.
+
+
 ## Requirements
 
 - Windows 11 24H2 (26100.2605) or later
@@ -12,7 +15,7 @@ A minimal Windows utility that moves, pins, and unpins the active window across 
 
 ### Download
 
-Download `move-win-vd.exe` from the [Releases](https://github.com/ryomo/move-win-vd/releases) page and place it anywhere you like (e.g. `C:\Tools\move-win-vd.exe`).
+Download `move-win-vd.exe` from the [Releases](https://github.com/Ilapides/move-win-vd/releases) page and place it anywhere you like (e.g. `C:\Tools\move-win-vd.exe`).
 
 #### SmartScreen warning
 
@@ -37,6 +40,10 @@ The most convenient way to use this tool is to bind it to keyboard shortcuts via
 |----------|----------------------|--------|--------|
 | `Win + Ctrl + Alt + Right` | `move-win-vd.exe` | `r /s` | Move window to next desktop and follow |
 | `Win + Ctrl + Alt + Left`  | `move-win-vd.exe` | `l /s` | Move window to previous desktop and follow |
+| `Win + Ctrl + Alt + Up` | `move-win-vd.exe` | `p` | Pin active window on all desktops |
+| `Win + Ctrl + Alt + Down` | `move-win-vd.exe` | `u` | Unpin active window |
+| `Win + Ctrl + Alt + Shift + Up` | `move-win-vd.exe` | `pa` | Pin active app on all desktops |
+| `Win + Ctrl + Alt + Shift + Down` | `move-win-vd.exe` | `ua` | Unpin active app |
 
 **Tips:**
 - Use the full path to `move-win-vd.exe` in the Keyboard Manager configuration (e.g. `C:\Tools\move-win-vd.exe`).
@@ -102,8 +109,10 @@ move-win-vd.exe ua
 ### Pin/Unpin Behavior Note
 
 Virtual desktop pinning behavior is determined by the Windows API used by `winvd`.
-If an app is pinned, unpinning one of its windows may unpin the app-level pin state.
-If you want explicit app-level control, prefer `pa` and `ua`.
+- If an app is pinned, unpinning one of its windows (`u`) may also unpin the app-level pin state.
+- If a window is pinned and you unpin the app (`ua`), that window can remain pinned.
+
+For explicit app-level control, prefer `pa` and `ua`.
 
 <br>
 
@@ -130,7 +139,6 @@ The binary will be at `target/release/move-win-vd.exe`.
 ### Release Process
 
 Below is the process for releasing a new version on GitHub.\
-Just a reminder for myself :smile:
 
 1. Go to **Actions** → **release** → **Run workflow**, enter the version number (e.g. `1.2.3`), and run it.
    - This automatically updates `Cargo.toml` and `Cargo.lock`, commits the changes, and creates + pushes the `v*.*.*` tag.
