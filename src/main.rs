@@ -5,8 +5,8 @@ use std::env;
 use std::process;
 use windows::Win32::UI::WindowsAndMessaging::GetForegroundWindow;
 use winvd::{
-    get_current_desktop, get_desktop_count, move_window_to_desktop, pin_window, switch_desktop,
-    unpin_window,
+    get_current_desktop, get_desktop_count, move_window_to_desktop, pin_app, pin_window,
+    switch_desktop, unpin_app, unpin_window,
 };
 
 fn main() {
@@ -18,6 +18,8 @@ fn main() {
         Left,
         Pin,
         Unpin,
+        PinApp,
+        UnpinApp,
     }
 
     // Parse the first positional argument to determine the action
@@ -26,6 +28,8 @@ fn main() {
         Some("l") => WindowAction::Left,
         Some("p") => WindowAction::Pin,
         Some("u") => WindowAction::Unpin,
+        Some("pa") => WindowAction::PinApp,
+        Some("ua") => WindowAction::UnpinApp,
         _ => process::exit(1),
     };
 
@@ -43,6 +47,18 @@ fn main() {
 
     // Pin/unpin are terminal actions; only left/right continue to move logic.
     match action {
+        WindowAction::PinApp => {
+            if pin_app(hwnd).is_err() {
+                process::exit(1);
+            }
+            return;
+        }
+        WindowAction::UnpinApp => {
+            if unpin_app(hwnd).is_err() {
+                process::exit(1);
+            }
+            return;
+        }
         WindowAction::Pin => {
             if pin_window(hwnd).is_err() {
                 process::exit(1);
